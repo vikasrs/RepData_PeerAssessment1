@@ -95,3 +95,33 @@ median(stepsData.date$steps)
 Yes, there is a difference. The number of steps is not biased anymore by missing values. The mean number of steps has decreased from before, whereas the median has increased.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+### Create a new factor variable in the dataset with two levels – “weekday”
+### and “weekend” indicating whether a given date is a weekday or weekend day.
+
+```{r}
+typeOfDay <- function(date) {
+    if (weekdays(as.Date(date)) %in% c("Monday", "Tuesday","Wednesday","Thursday","Friday"))
+        return("Weekday")
+    else
+        return("Weekend")
+}
+imputedActivityData$typeOfDay <- as.factor(sapply(imputedActivityData$date, typeOfDay))
+```
+
+### Make a panel plot containing a time series plot (i.e. type = "l") of the
+### 5-minute interval (x-axis) and the average number of steps taken, averaged
+### across all weekday days or weekend days (y-axis).
+
+```{r}
+stepsData.Weekday <- aggregate(steps ~ interval, data = imputedActivityData, 
+    subset = imputedActivityData$typeOfDay == "Weekday", FUN = mean)
+
+stepsData.Weekend <- aggregate(steps ~ interval, data = imputedActivityData, 
+    subset = imputedActivityData$typeOfDay == "Weekend", FUN = mean)
+
+par(mfrow=c(2,1))
+
+plot(stepsData.Weekday, type = "l", main = "Weekday")
+plot(stepsData.Weekend, type = "l", main = "Weekend")
+```
